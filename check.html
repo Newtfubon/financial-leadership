@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>財務健檢 · 你的錢在同齡人裡排第幾？</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f3ef; --card:#ffffff; --card2:#1e1e2a;
+  --border:#e0dcd5; --border2:#32324a;
+  --gold:#b8892a; --gold-d:#8a6318; --gold-light:#d4a94e;
+  --teal:#1aada5; --coral:#d94f4f; --lavender:#7c5fe6;
+  --mint:#29a870; --orange:#d4620a;
+  --text:#1a1a22; --text2:#44424e; --muted:#888698; --dim:#d0cdc8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+.screen{display:none;position:relative;z-index:1;}
+.screen.active{display:flex;flex-direction:column;align-items:center;min-height:100vh;}
+
+/* ── INTRO ── */
+#intro{justify-content:flex-start;padding:44px 20px 44px;text-align:center;}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;
+  font-size:12px;letter-spacing:2px;color:var(--gold);
+  border:1.5px solid var(--gold-light);
+  padding:7px 16px;border-radius:20px;
+  margin-bottom:24px;text-transform:uppercase;
+  background:rgba(212,169,78,0.08);
+}
+.intro-title{
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(34px,9vw,48px);
+  font-weight:900;line-height:1.25;
+  margin-bottom:12px;color:var(--text);
+}
+.intro-title em{color:var(--gold);font-style:normal;}
+.intro-sub{
+  font-size:16px;color:var(--text2);
+  line-height:1.9;margin-bottom:28px;
+}
+.stats-row{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:32px;width:100%;
+}
+.stat-chip{
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:14px;padding:14px 10px;
+  flex:1;min-width:88px;max-width:150px;text-align:center;
+}
+.stat-chip .num{
+  font-family:'DM Mono',monospace;
+  font-size:20px;color:var(--gold-light);
+  display:block;margin-bottom:4px;font-weight:500;
+}
+.stat-chip .lbl{font-size:12px;color:#a0a0b8;line-height:1.4;}
+
+.age-wrap{width:100%;max-width:440px;margin-bottom:14px;}
+.age-wrap label{display:block;font-size:15px;color:var(--text2);margin-bottom:8px;text-align:left;font-weight:500;}
+.age-wrap select{
+  width:100%;background:var(--card);border:2px solid var(--border);
+  color:var(--text);padding:15px 18px;
+  border-radius:14px;font-size:17px;
+  font-family:'Noto Sans TC',sans-serif;
+  appearance:none;cursor:pointer;outline:none;
+  transition:border-color 0.2s;
+}
+.age-wrap select:focus{border-color:var(--gold);}
+.btn-start{
+  width:100%;max-width:440px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  color:#fff;border:none;padding:18px;border-radius:50px;
+  font-size:18px;font-weight:700;
+  font-family:'Noto Sans TC',sans-serif;
+  cursor:pointer;letter-spacing:1px;
+  box-shadow:0 4px 20px rgba(184,137,42,0.35);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.btn-start:active{transform:scale(0.97);}
+.privacy-note{font-size:13px;color:var(--muted);margin-top:16px;}
+
+/* ── QUIZ ── */
+#quiz{padding:0;justify-content:flex-start;background:var(--bg);}
+.quiz-top{width:100%;padding:20px 20px 0;display:flex;align-items:center;gap:14px;}
+.prog-wrap{flex:1;height:6px;background:var(--dim);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--teal));border-radius:3px;transition:width 0.4s ease;}
+.prog-txt{font-family:'DM Mono',monospace;font-size:15px;color:var(--muted);white-space:nowrap;}
+
+.q-wrap{width:100%;max-width:520px;padding:28px 20px 20px;flex:1;display:flex;flex-direction:column;}
+.q-dim{
+  font-family:'DM Mono',monospace;
+  font-size:13px;letter-spacing:2px;
+  color:var(--gold-d);margin-bottom:14px;
+  text-transform:uppercase;display:flex;align-items:center;gap:8px;font-weight:500;
+}
+.q-icon-big{font-size:48px;margin-bottom:16px;display:block;line-height:1;}
+.q-text{
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(20px,5vw,26px);
+  font-weight:700;line-height:1.55;
+  margin-bottom:24px;color:var(--text);
+}
+.opts{display:flex;flex-direction:column;gap:14px;}
+.opt{
+  background:var(--card);border:2px solid var(--border);color:var(--text);
+  padding:20px 20px;border-radius:16px;
+  font-size:18px;line-height:1.5;font-weight:500;
+  font-family:'Noto Sans TC',sans-serif;
+  cursor:pointer;text-align:left;
+  display:flex;align-items:center;gap:14px;
+  transition:all 0.18s;min-height:64px;
+  -webkit-user-select:none;user-select:none;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.opt:active{transform:scale(0.98);}
+.opt.sel{border-color:var(--gold);background:rgba(212,169,78,0.1);color:var(--gold-d);}
+.opt-ltr{font-family:'DM Mono',monospace;font-size:16px;color:var(--muted);min-width:22px;flex-shrink:0;}
+.opt.sel .opt-ltr{color:var(--gold);}
+
+/* ── RESULT ── */
+#result{padding:36px 20px 60px;align-items:center;background:var(--bg);}
+.res-badge{margin-bottom:12px;}
+.res-title{
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(24px,6vw,32px);
+  font-weight:900;line-height:1.5;
+  margin-bottom:12px;text-align:center;color:var(--text);
+}
+.res-tag{font-size:17px;color:var(--text2);line-height:2;text-align:center;max-width:400px;margin-bottom:24px;}
+
+/* RADAR — 放大canvas讓標籤有空間 */
+.radar-box{
+  width:100%;max-width:380px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:24px;padding:14px;
+  margin-bottom:20px;
+}
+.radar-box canvas{width:100% !important;height:auto !important;display:block;}
+
+/* SCORE GRID */
+.sc-grid{width:100%;max-width:520px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.sc-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:16px;padding:14px 12px;
+  position:relative;overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.sc-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;}
+.sc-card.c0::after{background:var(--gold);}
+.sc-card.c1::after{background:var(--teal);}
+.sc-card.c2::after{background:var(--coral);}
+.sc-card.c3::after{background:var(--lavender);}
+.sc-card.c4::after{background:var(--mint);}
+.sc-card.c5::after{background:var(--orange);}
+.sc-icon{font-size:28px;margin-bottom:6px;display:block;}
+.sc-lbl{font-size:14px;color:var(--muted);margin-bottom:6px;letter-spacing:0.5px;}
+.sc-num{font-family:'DM Mono',monospace;font-size:42px;font-weight:500;line-height:1;margin-bottom:8px;}
+.sc-bar-bg{height:4px;background:var(--dim);border-radius:2px;}
+.sc-bar{height:100%;border-radius:2px;}
+.sc-card.c0 .sc-bar{background:var(--gold);}
+.sc-card.c1 .sc-bar{background:var(--teal);}
+.sc-card.c2 .sc-bar{background:var(--coral);}
+.sc-card.c3 .sc-bar{background:var(--lavender);}
+.sc-card.c4 .sc-bar{background:var(--mint);}
+.sc-card.c5 .sc-bar{background:var(--orange);}
+.sc-compare{font-size:14px;color:var(--muted);margin-top:7px;line-height:1.5;}
+
+/* INSIGHT */
+.insight{
+  width:100%;max-width:520px;
+  background:var(--card);
+  border:1.5px solid var(--border);
+  border-left:4px solid var(--gold);
+  border-radius:16px;padding:20px 18px;
+  margin-bottom:18px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.insight-lbl{font-family:'DM Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--gold-d);text-transform:uppercase;margin-bottom:12px;font-weight:500;}
+.insight-txt{font-size:17px;line-height:2;color:var(--text);}
+.insight-txt strong{color:var(--gold-d);font-weight:700;}
+
+.btn-cta{
+  width:100%;max-width:520px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  color:#fff;border:none;padding:18px;
+  border-radius:50px;font-size:17px;font-weight:700;
+  font-family:'Noto Sans TC',sans-serif;
+  cursor:pointer;margin-bottom:12px;
+  box-shadow:0 4px 20px rgba(184,137,42,0.3);
+  transition:transform 0.15s;
+}
+.btn-cta:active{transform:scale(0.98);}
+.btn-again{
+  background:transparent;border:1.5px solid var(--border);
+  color:var(--muted);padding:13px 32px;
+  border-radius:50px;font-size:14px;
+  font-family:'Noto Sans TC',sans-serif;cursor:pointer;
+}
+.divider{width:40px;height:2px;background:var(--dim);border-radius:2px;margin:0 auto 20px;}
+.data-note{font-size:12px;color:var(--muted);text-align:center;max-width:380px;margin-top:20px;line-height:1.7;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fadeUp 0.4s ease forwards;}
+
+/* SETUP */
+#setup{justify-content:center;padding:48px 24px;text-align:center;}
+.setup-icon{font-size:52px;margin-bottom:20px;}
+.setup-title{font-family:'Noto Serif TC',serif;font-size:24px;font-weight:900;color:var(--text);margin-bottom:10px;}
+.setup-sub{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:32px;}
+.setup-field{width:100%;max-width:400px;margin-bottom:14px;text-align:left;}
+.setup-field label{display:block;font-size:14px;color:var(--text2);margin-bottom:7px;font-weight:500;}
+.setup-field input{width:100%;background:var(--card);border:2px solid var(--border);color:var(--text);padding:15px 16px;border-radius:14px;font-size:17px;font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color 0.2s;}
+.setup-field input:focus{border-color:var(--gold);}
+.btn-setup{width:100%;max-width:400px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;border:none;padding:17px;border-radius:50px;font-size:17px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;margin-top:8px;box-shadow:0 4px 18px rgba(184,137,42,0.3);}
+.setup-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.7;max-width:360px;}
+.btn-skip{background:none;border:none;color:var(--muted);font-size:13px;margin-top:12px;cursor:pointer;text-decoration:underline;font-family:'Noto Sans TC',sans-serif;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.contact-card{width:100%;max-width:520px;background:var(--card);border-radius:28px 28px 0 0;padding:28px 24px 44px;animation:slideUp 0.32s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.card-handle{width:40px;height:4px;background:var(--dim);border-radius:2px;margin:0 auto 24px;}
+.advisor-avatar{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;}
+.advisor-name{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:900;color:var(--text);text-align:center;margin-bottom:3px;}
+.advisor-role{font-size:14px;color:var(--muted);text-align:center;margin-bottom:24px;}
+.contact-btns{display:flex;flex-direction:column;gap:12px;}
+.btn-line{display:flex;align-items:center;justify-content:center;gap:10px;background:#06C755;color:#fff;border:none;padding:17px;border-radius:50px;font-size:17px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(6,199,85,0.3);text-decoration:none;}
+.btn-tel{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--card);color:var(--text);border:2px solid var(--border);padding:15px;border-radius:50px;font-size:16px;font-weight:500;font-family:'Noto Sans TC',sans-serif;cursor:pointer;text-decoration:none;}
+.btn-close-modal{background:none;border:none;color:var(--muted);font-size:14px;text-align:center;width:100%;padding:14px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:4px;}
+.gear-btn{position:fixed;top:16px;right:16px;z-index:50;background:var(--card);border:1.5px solid var(--border);border-radius:50%;width:40px;height:40px;display:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.gear-btn.visible{display:flex;}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup" class="screen">
+  <div class="setup-icon">👔</div>
+  <h2 class="setup-title">業務員初始設定</h2>
+  <p class="setup-sub">設定完成後，客戶填完健檢<br>可以直接聯繫你</p>
+  <div class="setup-field">
+    <label>你的姓名</label>
+    <input type="text" id="inputName" placeholder="例：王小明" maxlength="20">
+  </div>
+  <div class="setup-field">
+    <label>LINE ID</label>
+    <input type="text" id="inputLine" placeholder="例：@advisor123" maxlength="50">
+  </div>
+  <div class="setup-field">
+    <label>聯絡電話（選填）</label>
+    <input type="tel" id="inputTel" placeholder="例：0912-345-678" maxlength="20">
+  </div>
+  <button class="btn-setup" onclick="saveSetup()">產生我的專屬連結 →</button>
+
+  <!-- 產生後顯示的連結區塊 -->
+  <div id="myUrlBox" style="display:none;width:100%;max-width:400px;margin-top:24px;">
+    <div style="background:var(--card);border:2px solid var(--gold-light);border-radius:16px;padding:20px;">
+      <div style="font-size:13px;color:var(--gold-d);font-weight:700;margin-bottom:8px;">✅ <span id="myUrlName"></span> 的專屬連結</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;">把以下連結傳給你的客戶<br>客戶打開會直接進體檢，不會看到設定頁</div>
+      <input id="myUrlInput" type="text" readonly
+        style="width:100%;background:#f8f6f2;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);font-family:'DM Mono',monospace;margin-bottom:10px;outline:none;">
+      <div style="display:flex;gap:8px;">
+        <button id="copyBtn" onclick="copyUrl()"
+          style="flex:1;background:var(--gold);color:#fff;border:none;padding:13px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;">複製連結</button>
+        <button onclick="goToIntro()"
+          style="flex:1;background:var(--card);color:var(--text);border:2px solid var(--border);padding:13px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;">開始使用</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="setup-note">🔒 資料僅存在你的裝置，不會上傳<br>之後可點右上角 ⚙️ 修改設定</p>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal" onclick="closeModal(event)">
+  <div class="contact-card">
+    <div class="card-handle"></div>
+    <div class="advisor-avatar">👔</div>
+    <div class="advisor-name" id="modalName">顧問</div>
+    <div class="advisor-role">財務規劃顧問 · 富邦人壽</div>
+    <div class="contact-btns">
+      <a class="btn-line" id="modalLine" href="#" target="_blank">
+        <span>💬</span><span>LINE 立即諮詢</span>
+      </a>
+      <a class="btn-tel" id="modalTel" href="#" style="display:none">
+        <span>📞</span><span id="modalTelTxt">電話聯絡</span>
+      </a>
+    </div>
+    <button class="btn-close-modal" onclick="closeModalBtn()">稍後再說</button>
+  </div>
+</div>
+
+<!-- GEAR BTN -->
+<button class="gear-btn" id="gearBtn" onclick="show('setup')">⚙️</button>
+
+<!-- INTRO -->
+
+<div id="intro" class="screen active">
+  <div class="badge">財務健康體檢 · 2026大數據版</div>
+  <h1 class="intro-title">你的錢，<br>在<em>同齡人</em>裡<br>排第幾？</h1>
+  <p class="intro-sub">12個問題，3分鐘<br>看清你的財務六大面向<br>數據來源：主計總處・中經院・富邦投信</p>
+  <div class="stats-row">
+    <div class="stat-chip"><span class="num">1,048萬</span><span class="lbl">未退族平均退休缺口</span></div>
+    <div class="stat-chip"><span class="num">23%</span><span class="lbl">台灣人存款為零</span></div>
+    <div class="stat-chip"><span class="num">42.7歲</span><span class="lbl">才開始存退休金</span></div>
+  </div>
+  <div class="age-wrap">
+    <label>你目前的年齡區間</label>
+    <select id="ageGroup">
+      <option value="">請選擇 ▾</option>
+      <option value="u30">25～29歲</option>
+      <option value="30s">30～39歲</option>
+      <option value="40s">40～49歲</option>
+      <option value="50s">50～59歲</option>
+      <option value="60p">60歲以上</option>
+    </select>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">開始體檢 →</button>
+  <p class="privacy-note">🔒 資料不上傳，純本機計算</p>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="quiz-top">
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <span class="prog-txt" id="progTxt">1 / 12</span>
+  </div>
+  <div class="q-wrap" id="qWrap"></div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="screen">
+  <div class="badge res-badge fu">你的財務健檢報告</div>
+  <h2 class="res-title fu" id="resTitle"></h2>
+  <p class="res-tag fu" id="resTag"></p>
+  <div class="divider fu"></div>
+  <div class="radar-box fu">
+    <canvas id="radarC" width="352" height="352"></canvas>
+  </div>
+  <div class="sc-grid fu" id="scGrid"></div>
+  <div class="insight fu">
+    <div class="insight-lbl">📊 個人化分析</div>
+    <p class="insight-txt" id="insightTxt"></p>
+  </div>
+  <button class="btn-cta fu" onclick="ctaClick()">預約完整財務規劃諮詢 →</button>
+  <button class="btn-again fu" onclick="restart()">重新體檢</button>
+  <p class="data-note fu">數據來源：主計總處113年家庭收支調查・2025國人安心樂活享退調查（富邦投信×中經院）・Yes123調查</p>
+</div>
+
+<script>
+const AGE_DATA={u30:{avg:55.9},'30s':{avg:77.3},'40s':{avg:92.4},'50s':{avg:83.2},'60p':{avg:49.2}};
+const DIMS=['收入競爭力','儲蓄安全感','退休準備度','保障完整性','資產增長力','財務抗壓力'];
+const ICONS=['💰','🏦','🎯','🛡️','📈','💪'];
+const COLORS=['#b8892a','#1aada5','#d94f4f','#7c5fe6','#29a870','#d4620a'];
+
+const QS=[
+  {d:0,icon:'💰',text:'你目前的月收入大約落在哪個區間？',opts:['3萬以下','3～5萬','5～8萬','8萬以上'],sc:[10,30,60,90]},
+  {d:0,icon:'💰',text:'你覺得自己的收入跟同年齡朋友比起來？',opts:['應該偏低','差不多','還不錯','明顯較高'],sc:[10,35,65,90]},
+  {d:1,icon:'🏦',text:'如果明天突然失業，你的存款可以撐幾個月生活？',opts:['不到1個月','1～3個月','3～6個月','6個月以上'],sc:[5,25,60,95]},
+  {d:1,icon:'🏦',text:'每個月薪水到手後，你大概能存下多少比例？',opts:['幾乎存不到','不到10%','10～30%','30%以上'],sc:[5,25,65,95]},
+  {d:2,icon:'🎯',text:'目前你為退休準備的資產（含勞退、儲蓄）大概有多少？',opts:['幾乎沒有','100萬以下','100～500萬','500萬以上'],sc:[5,20,55,90]},
+  {d:2,icon:'🎯',text:'你預計幾歲退休？',opts:['還沒想過','65歲以後','55～65歲','55歲以前'],sc:[10,40,70,90]},
+  {d:3,icon:'🛡️',text:'你目前有哪些保險保障？',opts:['只有健保','有醫療險','有醫療＋壽險','醫療＋壽險＋重大傷病或長照'],sc:[10,35,65,95]},
+  {d:3,icon:'🛡️',text:'萬一住院，你知道自己的保險會賠多少嗎？',opts:['完全不知道','大概知道','清楚知道','有完整規劃且定期檢視'],sc:[10,35,70,95]},
+  {d:4,icon:'📈',text:'你目前有在做任何投資嗎？',opts:['完全沒有','偶爾買一點','有固定定期定額','有完整的投資組合'],sc:[5,25,65,95]},
+  {d:4,icon:'📈',text:'你的投資或儲蓄，每年大概能幫你產生多少收益？',opts:['幾乎沒有收益','不到2%','2～5%','5%以上'],sc:[5,20,60,95]},
+  {d:5,icon:'💪',text:'你目前的貸款狀況是？',opts:['房貸＋其他貸款都有壓力','有單一貸款，勉強負擔','小額信用卡偶爾有餘額','完全無負債'],sc:[10,35,65,95]},
+  {d:5,icon:'💪',text:'家人突然需要50萬醫療費，你的應對方式是？',opts:['完全沒辦法，只能借錢','很勉強，需要到處湊','可以應付，但會很緊','沒問題，現金準備充足'],sc:[5,25,65,95]}
+];
+
+let curQ=0,answers=[],ageGroup='';
+
+function startQuiz(){
+  ageGroup=document.getElementById('ageGroup').value;
+  if(!ageGroup){alert('請先選擇年齡區間');return;}
+  curQ=0;answers=[];show('quiz');renderQ();
+}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function renderQ(){
+  const q=QS[curQ];
+  document.getElementById('progFill').style.width=(curQ/QS.length*100)+'%';
+  document.getElementById('progTxt').textContent=`${curQ+1} / ${QS.length}`;
+  const wrap=document.getElementById('qWrap');
+  wrap.innerHTML=`
+    <div class="q-dim">${ICONS[q.d]}&nbsp;${DIMS[q.d]}</div>
+    <span class="q-icon-big">${q.icon}</span>
+    <div class="q-text">${q.text}</div>
+    <div class="opts">
+      ${q.opts.map((o,i)=>`
+        <button class="opt" onclick="pick(${i})">
+          <span class="opt-ltr">${String.fromCharCode(65+i)}</span>
+          <span>${o}</span>
+        </button>`).join('')}
+    </div>`;
+  wrap.classList.remove('fu');void wrap.offsetWidth;wrap.classList.add('fu');
+}
+function pick(idx){
+  document.querySelectorAll('.opt').forEach((b,i)=>b.classList.toggle('sel',i===idx));
+  answers.push({d:QS[curQ].d,score:QS[curQ].sc[idx]});
+  setTimeout(()=>{curQ++;curQ>=QS.length?showResult():renderQ();},320);
+}
+function dimScores(){
+  const s=[0,0,0,0,0,0],c=[0,0,0,0,0,0];
+  answers.forEach(a=>{s[a.d]+=a.score;c[a.d]++;});
+  return s.map((v,i)=>c[i]?Math.round(v/c[i]):0);
+}
+function showResult(){
+  const scores=dimScores();
+  const total=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  const weakI=scores.indexOf(Math.min(...scores));
+  const strongI=scores.indexOf(Math.max(...scores));
+  const titles=[
+    '財務基礎紮實，<br>但仍有優化空間',
+    '財務狀況中等，<br>關鍵缺口需補起來',
+    '財務防線需要盡快強化'
+  ];
+  const tags=[
+    '你在許多面向表現不錯，<br>距離真正的財務安全感只差最後幾步。',
+    '你有一定基礎，<br>但幾個面向的缺口可能在未來造成壓力。',
+    '現在是最好的時機——<br>趁早打好基礎，未來的自己會感謝你。'
+  ];
+  const idx=total>=75?0:total>=50?1:2;
+  document.getElementById('resTitle').innerHTML=titles[idx];
+  document.getElementById('resTag').innerHTML=tags[idx];
+
+  const COMPARE=[
+    s=>s>=70?'贏過同齡 70% 以上':s>=40?'約在同齡中間值':'低於同齡平均',
+    s=>s>=70?'緊急預備金充足':s>=40?'部分準備，仍有缺口':'低於建議標準',
+    s=>s>=70?'退休準備相對充足':s>=40?'低於同齡平均水準':'同齡平均缺口達 1,048萬',
+    s=>s>=70?'保障配置完整':s>=40?'基本保障，仍有缺口':'保障明顯不足',
+    s=>s>=70?'資產正在穩定增長':s>=40?'增長動能不足':'資產尚未為你工作',
+    s=>s>=70?'財務抗壓力強':s>=40?'中等抗壓，有壓力點':'突發風險承受力低'
+  ];
+  document.getElementById('scGrid').innerHTML=scores.map((s,i)=>`
+    <div class="sc-card c${i}">
+      <span class="sc-icon">${ICONS[i]}</span>
+      <div class="sc-lbl">${DIMS[i]}</div>
+      <div class="sc-num" style="color:${COLORS[i]}">${s}</div>
+      <div class="sc-bar-bg"><div class="sc-bar" style="width:${s}%"></div></div>
+      <div class="sc-compare">${COMPARE[i](s)}</div>
+    </div>`).join('');
+
+  const DETAIL=[
+    `同齡人平均年收入約 ${AGE_DATA[ageGroup].avg} 萬元，提升收入是改善財務最直接的槓桿。`,
+    `主計總處資料：23% 台灣人存款為零。建議先建立 3～6 個月緊急預備金，再做其他規劃。`,
+    `2026最新調查，未退休族平均退休缺口高達 <strong>1,048萬元</strong>，平均42.7歲才開始存——越早差距越小。`,
+    `一次重大疾病可能讓多年儲蓄歸零。保障缺口在出事前是看不見的，但代價最高。`,
+    `ETF普及率從2017年的2%暴增至2025年的60%，多數人已在用定期定額讓資產持續增長。`,
+    `50萬突發醫療費是台灣家庭最常見的財務壓力測試——保障和預備金需要雙軌並進。`
+  ];
+  document.getElementById('insightTxt').innerHTML=
+    `你的<strong>「${DIMS[strongI]}」</strong>是最強項，表現優於同齡多數人。`+
+    `但<strong>「${DIMS[weakI]}」</strong>明顯偏低——${DETAIL[weakI]}`;
+
+  show('result');
+  setTimeout(()=>drawRadar(scores,total),200);
+}
+
+function drawRadar(scores,total){
+  const canvas=document.getElementById('radarC');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+  // 縮小R讓標籤有足夠空間在canvas內
+  const R=Math.min(W,H)*0.27;
+  const N=6;
+  ctx.clearRect(0,0,W,H);
+
+  // grid rings
+  for(let r=1;r<=5;r++){
+    ctx.beginPath();
+    for(let i=0;i<N;i++){
+      const a=(Math.PI*2*i/N)-Math.PI/2,pr=R*r/5;
+      i===0?ctx.moveTo(cx+pr*Math.cos(a),cy+pr*Math.sin(a)):ctx.lineTo(cx+pr*Math.cos(a),cy+pr*Math.sin(a));
+    }
+    ctx.closePath();
+    ctx.strokeStyle=r===5?'rgba(255,255,255,0.18)':'rgba(255,255,255,0.08)';
+    ctx.lineWidth=1;ctx.stroke();
+  }
+  // spokes
+  for(let i=0;i<N;i++){
+    const a=(Math.PI*2*i/N)-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));
+    ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.stroke();
+  }
+  // fill
+  ctx.beginPath();
+  scores.forEach((s,i)=>{
+    const a=(Math.PI*2*i/N)-Math.PI/2,r=(s/100)*R;
+    i===0?ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+  });
+  ctx.closePath();
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,'rgba(212,169,78,0.5)');
+  g.addColorStop(1,'rgba(61,214,204,0.2)');
+  ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle='rgba(212,169,78,0.9)';ctx.lineWidth=2;ctx.stroke();
+
+  // dots + labels (×1.3 字體)
+  // icon 20px→22px, label 13px→15px
+  const lblR=R+42;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  scores.forEach((s,i)=>{
+    const a=(Math.PI*2*i/N)-Math.PI/2,r=(s/100)*R;
+    // dot
+    ctx.beginPath();
+    ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),7,0,Math.PI*2);
+    ctx.fillStyle=COLORS[i];ctx.fill();
+    ctx.strokeStyle='#1e1e2a';ctx.lineWidth=2;ctx.stroke();
+    // label
+    const lx=cx+lblR*Math.cos(a),ly=cy+lblR*Math.sin(a);
+    ctx.font='22px serif';
+    ctx.fillStyle='rgba(255,255,255,0.95)';
+    ctx.fillText(ICONS[i],lx,ly-10);
+    ctx.font='bold 15px "Noto Sans TC"';
+    ctx.fillStyle='rgba(235,230,222,0.95)';
+    ctx.fillText(DIMS[i],lx,ly+10);
+  });
+
+  // center score: 34px→38px, 13px→15px
+  ctx.font='bold 38px "DM Mono"';
+  ctx.fillStyle='#d4a94e';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(total,cx,cy-10);
+  ctx.font='15px "Noto Sans TC"';
+  ctx.fillStyle='rgba(200,195,190,0.8)';
+  ctx.fillText('綜合評分',cx,cy+13);
+}
+
+// ── ADVISOR SETUP ──
+// 從URL讀取業務資訊
+function getUrlAdvisor(){
+  const p=new URLSearchParams(window.location.search);
+  const n=p.get('n'),l=p.get('l'),t=p.get('t');
+  if(n&&l) return {name:decodeURIComponent(n),line:decodeURIComponent(l),tel:t?decodeURIComponent(t):''};
+  return null;
+}
+function loadAdvisor(){
+  // URL參數優先（客戶模式）
+  const url=getUrlAdvisor();
+  if(url) return url;
+  // 否則讀localStorage（業務設定模式）
+  return {
+    name: localStorage.getItem('adv_name')||'',
+    line: localStorage.getItem('adv_line')||'',
+    tel:  localStorage.getItem('adv_tel')||''
+  };
+}
+function buildAdvisorUrl(name,line,tel){
+  const base=window.location.href.split('?')[0];
+  let url=base+'?n='+encodeURIComponent(name)+'&l='+encodeURIComponent(line);
+  if(tel) url+='&t='+encodeURIComponent(tel);
+  return url;
+}
+function saveSetup(){
+  const name=document.getElementById('inputName').value.trim();
+  const line=document.getElementById('inputLine').value.trim();
+  const tel=document.getElementById('inputTel').value.trim();
+  if(!name||!line){alert('請填寫姓名和LINE ID');return;}
+  localStorage.setItem('adv_name',name);
+  localStorage.setItem('adv_line',line);
+  localStorage.setItem('adv_tel',tel);
+  // 產生專屬連結並顯示
+  const myUrl=buildAdvisorUrl(name,line,tel);
+  showMyUrl(myUrl,name);
+}
+function showMyUrl(url,name){
+  document.getElementById('myUrlBox').style.display='block';
+  document.getElementById('myUrlInput').value=url;
+  document.getElementById('myUrlName').textContent=name;
+  document.getElementById('gearBtn').classList.add('visible');
+}
+function copyUrl(){
+  const inp=document.getElementById('myUrlInput');
+  inp.select();
+  inp.setSelectionRange(0,9999);
+  try{
+    navigator.clipboard.writeText(inp.value).then(()=>{
+      const btn=document.getElementById('copyBtn');
+      btn.textContent='✅ 已複製';
+      setTimeout(()=>{btn.textContent='複製連結';},2000);
+    });
+  } catch(e){
+    document.execCommand('copy');
+    const btn=document.getElementById('copyBtn');
+    btn.textContent='✅ 已複製';
+    setTimeout(()=>{btn.textContent='複製連結';},2000);
+  }
+}
+function goToIntro(){
+  show('intro');
+}
+function skipSetup(){
+  show('intro');
+}
+function ctaClick(){
+  const adv=loadAdvisor();
+  if(!adv.name||!adv.line){
+    alert('業務員尚未設定聯絡資訊，請請業務員完成初始設定。');
+    return;
+  }
+  // fill modal
+  document.getElementById('modalName').textContent=adv.name;
+  const lineUrl='https://line.me/ti/p/'+encodeURIComponent(adv.line);
+  document.getElementById('modalLine').href=lineUrl;
+  if(adv.tel){
+    document.getElementById('modalTel').href='tel:'+adv.tel.replace(/[^0-9+]/g,'');
+    document.getElementById('modalTelTxt').textContent=adv.tel;
+    document.getElementById('modalTel').style.display='flex';
+  } else {
+    document.getElementById('modalTel').style.display='none';
+  }
+  document.getElementById('contactModal').classList.add('open');
+}
+function closeModal(e){
+  if(e.target===document.getElementById('contactModal'))
+    document.getElementById('contactModal').classList.remove('open');
+}
+function closeModalBtn(){
+  document.getElementById('contactModal').classList.remove('open');
+}
+function restart(){answers=[];curQ=0;document.getElementById('ageGroup').value='';show('intro');}
+
+// init
+(function(){
+  const urlAdv=getUrlAdvisor();
+  if(urlAdv){
+    // 客戶模式：URL有業務資訊，直接進首頁，不顯示設定
+    document.getElementById('gearBtn').classList.remove('visible');
+    show('intro');
+    return;
+  }
+  // 業務模式：讀localStorage
+  const adv=loadAdvisor();
+  if(adv.name){
+    document.getElementById('gearBtn').classList.add('visible');
+    document.getElementById('inputName').value=adv.name;
+    document.getElementById('inputLine').value=adv.line;
+    document.getElementById('inputTel').value=adv.tel;
+    show('intro');
+  } else {
+    show('setup');
+  }
+})();
+</script>
+</body>
+</html>
