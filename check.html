@@ -539,10 +539,18 @@ function drawRadar(scores,total){
 
 // ── ADVISOR SETUP ──
 // 從URL讀取業務資訊
+// ── 加密/解密 ──
+function encode(obj){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+}
+function decode(str){
+  try{ return JSON.parse(decodeURIComponent(escape(atob(str)))); }
+  catch(e){ return null; }
+}
 function getUrlAdvisor(){
   const p=new URLSearchParams(window.location.search);
-  const n=p.get('n'),l=p.get('l'),t=p.get('t');
-  if(n&&l) return {name:decodeURIComponent(n),line:decodeURIComponent(l),tel:t?decodeURIComponent(t):''};
+  const d=p.get('d');
+  if(d){ const obj=decode(d); if(obj&&obj.name&&obj.line) return obj; }
   return null;
 }
 function loadAdvisor(){
@@ -558,9 +566,8 @@ function loadAdvisor(){
 }
 function buildAdvisorUrl(name,line,tel){
   const base=window.location.href.split('?')[0];
-  let url=base+'?n='+encodeURIComponent(name)+'&l='+encodeURIComponent(line);
-  if(tel) url+='&t='+encodeURIComponent(tel);
-  return url;
+  const obj={name,line,tel:tel||''};
+  return base+'?d='+encode(obj);
 }
 function saveSetup(){
   const name=document.getElementById('inputName').value.trim();
