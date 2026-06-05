@@ -298,6 +298,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
         <span>📞</span><span id="modalTelTxt">電話聯絡</span>
       </a>
     </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e8e2d8;text-align:center;">
+      <div style="font-size:12px;color:#888698;margin-bottom:10px;letter-spacing:1px;">掃描加入 LINE</div>
+      <div id="modalQR" style="display:inline-block;padding:10px;background:#fff;border-radius:12px;"></div>
+    </div>
     <button class="btn-close-modal" onclick="closeModalBtn()">稍後再說</button>
   </div>
 </div>
@@ -634,12 +638,12 @@ function skipSetup(){
 function ctaClick(){
   const adv=loadAdvisor();
   if(!adv.name||!adv.line){
-    alert('業務員尚未設定聯絡資訊，請請業務員完成初始設定。');
+    alert('業務員尚未設定聯絡資訊，請業務員完成初始設定。');
     return;
   }
-  // fill modal
   document.getElementById('modalName').textContent=adv.name;
-  const lineUrl='https://line.me/ti/p/~'+encodeURIComponent(adv.line).replace(/^%40/,'');
+  const lineId=adv.line.replace(/^@/,'');
+  const lineUrl='https://line.me/ti/p/~'+encodeURIComponent(lineId);
   document.getElementById('modalLine').href=lineUrl;
   if(adv.tel){
     document.getElementById('modalTel').href='tel:'+adv.tel.replace(/[^0-9+]/g,'');
@@ -648,8 +652,23 @@ function ctaClick(){
   } else {
     document.getElementById('modalTel').style.display='none';
   }
+  var qrDiv=document.getElementById('modalQR');
+  if(qrDiv){
+    qrDiv.innerHTML='';
+    try{
+      new QRCode(qrDiv,{
+        text:lineUrl,
+        width:160,
+        height:160,
+        colorDark:'#1a1a22',
+        colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.M
+      });
+    }catch(e){}
+  }
   document.getElementById('contactModal').classList.add('open');
 }
+
 function closeModal(e){
   if(e.target===document.getElementById('contactModal'))
     document.getElementById('contactModal').classList.remove('open');
