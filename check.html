@@ -291,7 +291,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
     <div class="advisor-name" id="modalName">顧問</div>
     <div class="advisor-role">財務規劃顧問 · 富邦人壽</div>
     <div class="contact-btns">
-      <a class="btn-line" id="modalLine" href="#" target="_blank">
+      <a class="btn-line" id="modalLine" href="#" onclick="openLine(event)">
         <span>💬</span><span>LINE 立即諮詢</span>
       </a>
       <a class="btn-tel" id="modalTel" href="#" style="display:none">
@@ -680,6 +680,14 @@ function ctaClick(){
   document.getElementById('contactModal').classList.add('open');
 }
 
+function openLine(e){
+  e.preventDefault();
+  var btn=document.getElementById('modalLine');
+  var url=btn.href;
+  if(url && url!=='#'){
+    window.location.href=url;
+  }
+}
 function closeModal(e){
   if(e.target===document.getElementById('contactModal'))
     document.getElementById('contactModal').classList.remove('open');
