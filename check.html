@@ -655,6 +655,8 @@ function ctaClick(){
   var qrDiv=document.getElementById('modalQR');
   if(qrDiv){
     qrDiv.innerHTML='';
+    // Try QRCode library first, fallback to Google Charts API
+    var generated=false;
     try{
       new QRCode(qrDiv,{
         text:lineUrl,
@@ -664,7 +666,16 @@ function ctaClick(){
         colorLight:'#ffffff',
         correctLevel:QRCode.CorrectLevel.M
       });
+      generated=true;
     }catch(e){}
+    if(!generated){
+      var img=document.createElement('img');
+      img.src='https://api.qrserver.com/v1/create-qr-code/?size=160x160&data='+encodeURIComponent(lineUrl);
+      img.width=160;
+      img.height=160;
+      img.style.borderRadius='8px';
+      qrDiv.appendChild(img);
+    }
   }
   document.getElementById('contactModal').classList.add('open');
 }
