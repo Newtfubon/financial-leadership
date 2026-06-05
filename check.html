@@ -643,7 +643,7 @@ function ctaClick(){
   }
   document.getElementById('modalName').textContent=adv.name;
   const lineId=adv.line.replace(/^@/,'');
-  const lineUrl='https://line.me/ti/p/~'+encodeURIComponent(lineId);
+  const lineUrl='https://line.me/R/ti/p/~'+encodeURIComponent(lineId);
   document.getElementById('modalLine').href=lineUrl;
   if(adv.tel){
     document.getElementById('modalTel').href='tel:'+adv.tel.replace(/[^0-9+]/g,'');
@@ -685,7 +685,7 @@ function openLine(e){
   var btn=document.getElementById('modalLine');
   var url=btn.href;
   if(url && url!=='#'){
-    window.location.href=url;
+    window.open(url,'_blank');
   }
 }
 function closeModal(e){
