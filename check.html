@@ -236,6 +236,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 .gear-btn{position:fixed;top:16px;right:16px;z-index:50;background:var(--card);border:1.5px solid var(--border);border-radius:50%;width:40px;height:40px;display:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 .gear-btn.visible{display:flex;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -265,11 +266,16 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
       <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;">把以下連結傳給你的客戶<br>客戶打開會直接進體檢，不會看到設定頁</div>
       <input id="myUrlInput" type="text" readonly
         style="width:100%;background:#f8f6f2;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);font-family:'DM Mono',monospace;margin-bottom:10px;outline:none;">
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
         <button id="copyBtn" onclick="copyUrl()"
           style="flex:1;background:var(--gold);color:#fff;border:none;padding:13px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;">複製連結</button>
         <button onclick="goToIntro()"
           style="flex:1;background:var(--card);color:var(--text);border:2px solid var(--border);padding:13px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;">開始使用</button>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:14px;text-align:center;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;">掃描 QR Code 分享給客戶</div>
+        <canvas id="qrCanvas" style="border-radius:8px;"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;">截圖儲存後可印在名片或簡報上</div>
       </div>
     </div>
   </div>
@@ -586,6 +592,21 @@ function showMyUrl(url,name){
   document.getElementById('myUrlInput').value=url;
   document.getElementById('myUrlName').textContent=name;
   document.getElementById('gearBtn').classList.add('visible');
+  // Generate QR Code
+  var canvas=document.getElementById('qrCanvas');
+  if(canvas){
+    canvas.innerHTML='';
+    try{
+      new QRCode(canvas,{
+        text:url,
+        width:180,
+        height:180,
+        colorDark:'#1a1a22',
+        colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.M
+      });
+    }catch(e){ canvas.style.display='none'; }
+  }
 }
 function copyUrl(){
   const inp=document.getElementById('myUrlInput');
@@ -618,7 +639,7 @@ function ctaClick(){
   }
   // fill modal
   document.getElementById('modalName').textContent=adv.name;
-  const lineUrl='https://line.me/ti/p/'+encodeURIComponent(adv.line);
+  const lineUrl='https://line.me/ti/p/~'+encodeURIComponent(adv.line).replace(/^%40/,'');
   document.getElementById('modalLine').href=lineUrl;
   if(adv.tel){
     document.getElementById('modalTel').href='tel:'+adv.tel.replace(/[^0-9+]/g,'');
